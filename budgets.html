@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XpenseSmart - Budgets</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="transitions.css">
+    <link rel="stylesheet" href="loader.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .budget-form {
+            background: #2c3e50;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #f5f5f5;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #34495e;
+            border-radius: 5px;
+            background: #34495e;
+            color: #f5f5f5;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .budget-list {
+            padding: 20px;
+            padding-bottom: 80px;
+            scroll-behavior: smooth;
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #3498db #2c3e50;
+        }
+
+        .budget-item {
+            background: #2c3e50;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 25px;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-top: -20px;
+        }
+
+        .budget-info h3 {
+            color: #f5f5f5;
+            margin: 0 0 10px 0;
+            font-size: 1.2em;
+        }
+
+        .budget-info p {
+            color: #bdc3c7;
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .budget-progress {
+            height: 10px;
+            background: #34495e;
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .budget-actions {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+        }
+
+        .delete-budget {
+            background: none;
+            border: none;
+            color: #e74c3c;
+            cursor: pointer;
+            padding: 5px;
+            font-size: 1.1em;
+        }
+
+        .submit-btn {
+            background: #3498db;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            width: 100%;
+            transition: background 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <header class="header">
+            <div class="header-center">
+                <h1 class="app-title">Budgets</h1>
+            </div>
+            <div class="header-right">
+                <div class="search-container">
+                    <a href="search.html" class="search-icon">
+                        <i class="fas fa-search"></i>
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <div class="transaction-summary">
+            <div class="summary-item budget">
+                <h3>BUDGET</h3>
+                <p class="amount" style="color: #00b894;">₹0.00</p>
+            </div>
+            <div class="summary-item used">
+                <h3>TOTAL USED</h3>
+                <p class="amount" style="color: #ff7675;">₹0.00</p>
+            </div>
+            <div class="summary-item remaining">
+                <h3>REMAINING</h3>
+                <p class="amount" style="color: #74b9ff;">₹0.00</p>
+            </div>
+        </div>
+
+        <form id="budgetForm" class="budget-form">
+            <div class="form-group">
+                <label for="budgetCategory">Category</label>
+                <select id="budgetCategory" required>
+                    <option value="Food">Food</option>
+                    <option value="Transportation">Transportation</option>
+                    <option value="Entertainment">Entertainment</option>
+                    <option value="Shopping">Shopping</option>
+                    <option value="Utilities">Utilities</option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="Education">Education</option>
+                    <option value="Others">Others</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="budgetAmount">Budget Amount</label>
+                <input type="number" id="budgetAmount" required min="0" step="0.01">
+            </div>
+            <div class="form-group">
+                <label for="budgetYear">Year</label>
+                <select id="budgetYear" required></select>
+            </div>
+            <div class="form-group">
+                <label for="budgetMonth">Month</label>
+                <select id="budgetMonth" required>
+                    <option value="0">January</option>
+                    <option value="1">February</option>
+                    <option value="2">March</option>
+                    <option value="3">April</option>
+                    <option value="4">May</option>
+                    <option value="5">June</option>
+                    <option value="6">July</option>
+                    <option value="7">August</option>
+                    <option value="8">September</option>
+                    <option value="9">October</option>
+                    <option value="10">November</option>
+                    <option value="11">December</option>
+                </select>
+            </div>
+            <button type="submit" class="submit-btn">Set Budget</button>
+        </form>
+
+        <div id="budgetList" class="budget-list">
+            <!-- Budget items will be dynamically added here -->
+        </div>
+    </div>
+
+    <div class="fab">
+        <button class="fab-button" aria-label="Add new transaction">
+            <i class="fas fa-plus"></i>
+        </button>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-plus-circle"></i>
+            <span>Record</span>
+        </a>
+        <a href="analysis.html" class="nav-item">
+            <i class="fas fa-chart-pie"></i>
+            <span>Analysis</span>
+        </a>
+        <a href="history.html" class="nav-item">
+            <i class="fas fa-history"></i>
+            <span>History</span>
+        </a>
+        <a href="budgets.html" class="nav-item active">
+            <i class="fas fa-money-bill-wave"></i>
+            <span>Budgets</span>
+        </a>
+    </nav>
+
+    <script src="script.js"></script>
+    <script src="budgets.js"></script>
+    <script src="fab.js"></script>
+    <script src="loader.js"></script>
+    <script src="currency.js"></script>
+    <script>
+        // Populate year dropdown with current year and next 2 years
+        const yearSelect = document.getElementById('budgetYear');
+        const currentYear = new Date().getFullYear();
+        for (let i = 0; i < 3; i++) {
+            const option = document.createElement('option');
+            option.value = currentYear + i;
+            option.textContent = currentYear + i;
+            yearSelect.appendChild(option);
+        }
+
+        // Set current month as default
+        document.getElementById('budgetMonth').value = new Date().getMonth();
+        
+        // Update budget amount label with current currency
+        document.addEventListener('DOMContentLoaded', function() {
+            const storedCurrency = localStorage.getItem('currency');
+            if (storedCurrency) {
+                const currency = JSON.parse(storedCurrency);
+                const budgetAmountLabel = document.querySelector('label[for="budgetAmount"]');
+                if (budgetAmountLabel) {
+                    budgetAmountLabel.textContent = `Budget Amount (${currency.symbol})`;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

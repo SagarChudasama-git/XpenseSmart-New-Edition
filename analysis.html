@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XpenseSmart - Analysis</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="transitions.css">
+    <link rel="stylesheet" href="loader.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .transaction-summary {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem;
+            background: #2c3e50;
+            margin: -20px;
+        }
+    
+        .summary-item {
+            flex: 1;
+            text-align: center;
+            padding: 0.5rem;
+        }
+    
+        .summary-item h3 {
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            opacity: 0.8;
+        }
+    
+        .summary-item .amount {
+            font-weight: 600;
+            font-size: 14px;
+        }
+    
+        .summary-item.expense .amount {
+            color: #ff7675;
+        }
+    
+        .chart-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+    
+        .chart-wrapper {
+            background: #2c3e50;
+            border-radius: 12px;
+            padding: 1rem;
+            height: 300px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 338px;
+            margin-left: -25px;
+            margin-top: -13px;
+        }
+    
+        .summary-item.income .amount {
+            color: #00b894;
+        }
+    </style>
+</head>
+<body style="background-color: #f1f1f2;">
+    
+    <div class="main-content">
+        <header class="header">
+            <div class="header-center">
+                <h1 class="app-title">Analysis</h1>
+            </div>
+            <div class="header-right">
+                <div class="search-container">
+                    <a href="search.html" class="search-icon">
+                        <i class="fas fa-search"></i>
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <div class="page-content page-transition active content-loaded">
+            <div class="transaction-summary" id="transactionSummary">
+                <div class="summary-item expense">
+                    <h3>EXPENSE</h3>
+                    <p class="amount" id="totalExpense">₹0.00</p>
+                </div>
+                <div class="summary-item income">
+                    <h3>INCOME</h3>
+                    <p class="amount" id="totalIncome">₹0.00</p>
+                </div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-wrapper">
+                    <canvas id="trendChart"></canvas>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <div class="fab">
+        <button class="fab-button" aria-label="Add new transaction">
+            <i class="fas fa-plus"></i>
+        </button>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <i class="fas fa-plus-circle"></i>
+            <span>Record</span>
+        </a>
+        <a href="analysis.html" class="nav-item active">
+            <i class="fas fa-chart-pie"></i>
+            <span>Analysis</span>
+        </a>
+        <a href="history.html" class="nav-item">
+            <i class="fas fa-history"></i>
+            <span>History</span>
+        </a>
+        <a href="budgets.html" class="nav-item">
+            <i class="fas fa-money-bill-wave"></i>
+            <span>Budgets</span>
+        </a>
+    </nav>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get currency once and cache it
+            let currentCurrency = { symbol: '₹', code: 'INR' };
+            const storedCurrency = localStorage.getItem('currency');
+            if (storedCurrency) {
+                currentCurrency = JSON.parse(storedCurrency);
+            }
+            
+            // Helper function to format amounts with current currency
+            function formatCurrency(amount) {
+                return `${currentCurrency.symbol}${parseFloat(amount).toFixed(2)}`;
+            }
+            
+            function updateTransactionSummary() {
+                const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+                let totalExpense = 0;
+                let totalIncome = 0;
+        
+                transactions.forEach(transaction => {
+                    if (transaction.type === 'expense') {
+                        totalExpense += parseFloat(transaction.amount);
+                    } else if (transaction.type === 'income') {
+                        totalIncome += parseFloat(transaction.amount);
+                    }
+                });
+        
+                document.getElementById('totalExpense').textContent = formatCurrency(totalExpense);
+                document.getElementById('totalIncome').textContent = formatCurrency(totalIncome);
+            }
+        
+            // Update summary when transactions change
+            updateTransactionSummary();
+        });
+        </script>
+
+    <script src="script.js"></script>
+    <script src="charts.js"></script>
+    <script src="fab.js"></script>
+    <script src="loader.js"></script>
+    <script src="currency.js"></script>
+</body>
+</html>
+
+

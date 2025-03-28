@@ -1,0 +1,102 @@
+/* Page Transitions */
+.page-transition {
+    opacity: 0;
+    transform: translateY(15px);
+    pointer-events: none;
+    transition: opacity 0.4s ease-out, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+}
+
+.page-transition.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* Global fade transition for page changes */
+body {
+    transition: opacity 0.3s ease;
+}
+
+body.fade-out {
+    opacity: 0;
+}
+
+/* Navigation Link Transitions */
+.nav-item {
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    backface-visibility: hidden;
+}
+
+.nav-item:hover {
+    transform: translateY(-2px);
+}
+
+/* Sidebar Transitions */
+.sidebar {
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+}
+
+.sidebar-overlay {
+    transition: opacity 0.4s ease-out;
+    will-change: opacity;
+}
+
+/* FAB Button Animations */
+.fab {
+    /* Force these styles to take precedence */
+    position: fixed !important;
+    bottom: 80px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    z-index: 1001 !important;
+    
+    /* Smooth transitions */
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                opacity 0.3s ease,
+                visibility 0.3s ease,
+                box-shadow 0.3s ease,
+                background-color 0.3s ease !important;
+    will-change: transform, opacity;
+}
+
+.fab:hover {
+    transform: translateX(-50%) scale(1.05) !important;
+}
+
+.fab:active {
+    transform: translateX(-50%) scale(0.95) !important;
+    transition: transform 0.1s ease !important;
+}
+
+/* Search Panel Animation */
+.search-panel {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease-in-out;
+}
+
+/* Content Loading Animation */
+@keyframes contentFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.content-loaded {
+    animation: contentFadeIn 0.5s ease-out forwards;
+}
+
+/* Transaction item hover effect */
+.transaction-item {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.transaction-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}

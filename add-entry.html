@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Entry - XpenseSmart</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="transitions.css">
+    <link rel="stylesheet" href="loader.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .back-btn i{
+            color: white;
+        }
+
+        /* Pop-up styles */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            backdrop-filter: blur(3px);
+        }
+
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+            max-width: 90%;
+            width: 320px;
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .popup-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .popup-icon.success { color: #2ecc71; }
+        .popup-icon.error { color: #e74c3c; }
+        .popup-icon.warning { color: #f1c40f; }
+
+        .popup-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .popup-message {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+
+        .popup-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .popup-btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .popup-btn.confirm {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .popup-btn.cancel {
+            background: #e74c3c;
+            color: white;
+        }
+        .entry-type-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 0.5rem 0;
+            margin-top: 1px;
+        }
+        
+        .toggle-btn {
+            display: flex;
+            padding: 0.5rem 2rem;
+            border: 2px solid #3498db;
+            background: transparent;
+            color: #3498db;
+            gap: 50px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-btn.active {
+            background: #3498db;
+            color: white;
+        }
+        
+        .category-select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .notes-area {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin: 1rem 0;
+            min-height: 100px;
+            font-family: 'Poppins', sans-serif;
+            resize: vertical;
+            margin-top: 2px;
+        }
+        
+        .calculator {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.2rem;
+            margin: 1rem 0;
+            margin-top: 1px;
+        }
+        
+        .calc-display {
+            grid-column: 1 / -1;
+            padding: 1rem;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            text-align: right;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .calc-btn {
+            padding: 1rem;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .calc-btn:hover {
+            background: #f8f9fa;
+        }
+        
+        .calc-btn.operator {
+            background: #e9ecef;
+        }
+        
+        .datetime-picker {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+</head>
+<body style="background-color: #f1f1f2;">
+
+    <!-- Pop-up Container -->
+    <div class="popup-overlay" id="popupOverlay">
+        <div class="popup">
+            <div class="popup-icon"></div>
+            <div class="popup-title"></div>
+            <div class="popup-message"></div>
+            <div class="popup-buttons">
+                <button class="popup-btn confirm">OK</button>
+                <button class="popup-btn cancel" style="display: none;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <a href="index.html" class="back-btn">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+            </div>
+            <div class="header-center">
+                <h2 style="color: #f5f5f5; margin-right: 20vh;">Add Entry</h2>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <div class="page-content page-transition active content-loaded">
+            <!-- Entry Type Toggle -->
+            <div class="entry-type-toggle">
+                <button class="toggle-btn active" id="expenseBtn">Expense</button>
+                <button class="toggle-btn" id="incomeBtn">Income</button>
+            </div>
+
+            <!-- Category Selection -->
+            <select class="category-select" id="categorySelect">
+                <option value="" disabled selected>Select Category</option>
+                <!-- Expense Categories -->
+                <optgroup label="Expense Categories" id="expenseCategories">
+                    <option value="food">Food & Dining</option>
+                    <option value="transportation">Transportation</option>
+                    <option value="utilities">Utilities</option>
+                    <option value="shopping">Shopping</option>
+                    <option value="entertainment">Entertainment</option>
+                    <option value="health">Health</option>
+                    <option value="education">Education</option>
+                    <option value="other_expense">Other</option>
+                </optgroup>
+                <!-- Income Categories -->
+                <optgroup label="Income Categories" id="incomeCategories" style="display: none;">
+                    <option value="salary">Salary</option>
+                    <option value="business">Business</option>
+                    <option value="investment">Investment</option>
+                    <option value="freelance">Freelance</option>
+                    <option value="other_income">Other</option>
+                </optgroup>
+            </select>
+
+            <!-- Notes Area -->
+            <textarea class="notes-area" placeholder="Add notes here..."></textarea>
+
+            <!-- Calculator -->
+            <div class="calculator">
+                <div class="calc-display" id="calcDisplay">0</div>
+                <button class="calc-btn">7</button>
+                <button class="calc-btn">8</button>
+                <button class="calc-btn">9</button>
+                <button class="calc-btn">0</button>
+                <button class="calc-btn">4</button>
+                <button class="calc-btn">5</button>
+                <button class="calc-btn">6</button>
+                <button class="calc-btn">.</button>
+                <button class="calc-btn">1</button>
+                <button class="calc-btn">2</button>
+                <button class="calc-btn">3</button>
+                <button class="calc-btn operator">C</button>
+               
+            </div>
+
+            <!-- Date and Time Picker -->
+            <input type="datetime-local" class="datetime-picker" id="datetimePicker">
+
+            <!-- Action Buttons -->
+            <div class="action-buttons" style="display: flex; justify-content: space-between; margin-top: 0.8rem;">
+                <button class="cancel-action-btn" style="padding: 0.8rem 2rem; border: none; border-radius: 8px; background: #ff4d4d; color: white; cursor: pointer;  font-family: 'Poppins', sans-serif; transition: all 0.3s ease;" onclick="window.location.href='index.html'">Cancel</button>
+                <button class="save-action-btn" style="padding: 0.8rem 2rem; border: none; border-radius: 8px; background: #2ecc71; color: white; cursor: pointer; font-family: 'Poppins', sans-serif; transition: all 0.3s ease;">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get current currency from localStorage or use default - only once
+        let currentCurrency = { symbol: '₹', code: 'INR' };
+        const storedCurrency = localStorage.getItem('currency');
+        if (storedCurrency) {
+            currentCurrency = JSON.parse(storedCurrency);
+        }
+        
+        // DOM element references - store for better performance
+        const calcDisplay = document.querySelector('.calc-display');
+        const categorySelect = document.getElementById('categorySelect');
+        const expenseCategories = document.getElementById('expenseCategories');
+        const incomeCategories = document.getElementById('incomeCategories');
+        const saveBtn = document.querySelector('.save-action-btn');
+        const notesArea = document.querySelector('.notes-area');
+        const dateTimePicker = document.getElementById('datetimePicker');
+        
+        let currentAmount = '0';
+        let currentType = 'expense'; // Default to expense
+        let editIndex = -1; // For editing existing transactions
+
+        // Toggle between expense and income
+        const toggleBtns = document.querySelectorAll('.toggle-btn');
+        toggleBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                toggleBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentType = this.id === 'expenseBtn' ? 'expense' : 'income';
+                
+                // Toggle category options
+                if (currentType === 'expense') {
+                    expenseCategories.style.display = '';
+                    incomeCategories.style.display = 'none';
+                } else {
+                    expenseCategories.style.display = 'none';
+                    incomeCategories.style.display = '';
+                }
+                categorySelect.value = ''; // Reset selection
+            });
+        });
+
+        // Function to update display amount with currency
+        function updateDisplayAmount() {
+            calcDisplay.textContent = currentCurrency.symbol + currentAmount;
+        }
+        
+        // Initialize display
+        updateDisplayAmount();
+        
+        // Calculator functionality - optimized event delegation
+        const calculator = document.querySelector('.calculator');
+        calculator.addEventListener('click', function(e) {
+            if (!e.target.classList.contains('calc-btn')) return;
+            
+            const value = e.target.textContent;
+            
+            if (value === 'C') {
+                // Clear button
+                currentAmount = '0';
+            } else if (value === '⌫') {
+                // Backspace button
+                if (currentAmount.length > 1) {
+                    currentAmount = currentAmount.slice(0, -1);
+                } else {
+                    currentAmount = '0';
+                }
+            } else if (value === '.') {
+                // Decimal point
+                if (!currentAmount.includes('.')) {
+                    currentAmount += '.';
+                }
+            } else {
+                // Number button
+                if (currentAmount === '0') {
+                    currentAmount = value;
+                } else {
+                    currentAmount += value;
+                }
+            }
+            
+            updateDisplayAmount();
+        });
+
+        // Check if we're editing an existing transaction
+        const urlParams = new URLSearchParams(window.location.search);
+        const isEditing = urlParams.get('edit') === 'true';
+        
+        if (isEditing) {
+            const editTransaction = JSON.parse(localStorage.getItem('editTransaction'));
+            if (editTransaction) {
+                editIndex = editTransaction.index;
+                currentType = editTransaction.type;
+                currentAmount = editTransaction.amount.toString();
+                calcDisplay.textContent = currentAmount;
+                categorySelect.value = editTransaction.category.toLowerCase();
+                notesArea.value = editTransaction.notes;
+                document.getElementById('datetimePicker').value = editTransaction.date;
+                
+                // Set correct toggle button
+                toggleBtns.forEach(btn => {
+                    btn.classList.remove('active');
+                    if ((btn.id === 'expenseBtn' && currentType === 'expense') ||
+                        (btn.id === 'incomeBtn' && currentType === 'income')) {
+                        btn.classList.add('active');
+                    }
+                });
+                
+                // Show correct category group
+                if (currentType === 'expense') {
+                    expenseCategories.style.display = '';
+                    incomeCategories.style.display = 'none';
+                } else {
+                    expenseCategories.style.display = 'none';
+                    incomeCategories.style.display = '';
+                }
+                
+                // Clear the stored edit transaction
+                localStorage.removeItem('editTransaction');
+            }
+        }
+
+        // Pop-up functionality
+        function showPopup(type, title, message, showCancel = false, onConfirm = null) {
+            const popup = document.querySelector('.popup');
+            const overlay = document.getElementById('popupOverlay');
+            const iconDiv = popup.querySelector('.popup-icon');
+            const titleDiv = popup.querySelector('.popup-title');
+            const messageDiv = popup.querySelector('.popup-message');
+            const cancelBtn = popup.querySelector('.popup-btn.cancel');
+            const confirmBtn = popup.querySelector('.popup-btn.confirm');
+
+            // Set icon based on type
+            iconDiv.className = 'popup-icon';
+            switch(type) {
+                case 'success':
+                    iconDiv.innerHTML = '<i class="fas fa-check-circle"></i>';
+                    iconDiv.classList.add('success');
+                    break;
+                case 'error':
+                    iconDiv.innerHTML = '<i class="fas fa-times-circle"></i>';
+                    iconDiv.classList.add('error');
+                    break;
+                case 'warning':
+                    iconDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i>';
+                    iconDiv.classList.add('warning');
+                    break;
+            }
+
+            titleDiv.textContent = title;
+            messageDiv.textContent = message;
+            cancelBtn.style.display = showCancel ? 'block' : 'none';
+            overlay.style.display = 'block';
+
+            // Blur the FAB button if it exists on this page
+            const fabButton = document.querySelector('.fab');
+            if (fabButton) {
+                fabButton.style.opacity = '0';
+                fabButton.style.pointerEvents = 'none';
+            }
+
+            // Reset event listeners
+            const closePopup = () => {
+                overlay.style.display = 'none';
+                
+                // Restore FAB button visibility
+                if (fabButton) {
+                    fabButton.style.opacity = '1';
+                    fabButton.style.pointerEvents = 'auto';
+                }
+            };
+
+            confirmBtn.onclick = () => {
+                closePopup();
+                if (onConfirm) onConfirm();
+            };
+
+            cancelBtn.onclick = closePopup;
+            
+            // Close when clicking outside the popup content
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) {
+                    closePopup();
+                }
+            });
+        }
+
+        // Save button functionality
+        saveBtn.addEventListener('click', function() {
+            const category = categorySelect.value;
+            const notes = notesArea.value;
+            const date = document.getElementById('datetimePicker').value;
+
+            if (!category) {
+                showPopup('error', 'Missing Category', 'Please select a category');
+                return;
+            }
+
+            if (currentAmount === '0') {
+                showPopup('error', 'Invalid Amount', 'Please enter an amount');
+                return;
+            }
+
+            if (!date) {
+                showPopup('error', 'Missing Date', 'Please select date and time');
+                return;
+            }
+
+            // Get existing transactions or initialize empty array
+            let transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+            
+            // Capitalize first letter of category and notes
+            const capitalizeFirstLetter = (str) => {
+                return str.charAt(0).toUpperCase() + str.slice(1);
+            };
+
+            const transactionData = {
+                type: currentType,
+                amount: parseFloat(parseFloat(currentAmount).toFixed(2)), // Ensure consistent decimal places
+                category: capitalizeFirstLetter(category),
+                notes: notes ? capitalizeFirstLetter(notes) : '',
+                date: date,
+                currency: currentCurrency.code // Store currency code with transaction
+            };
+
+            if (editIndex !== -1) {
+                // Update existing transaction
+                transactions[editIndex] = transactionData;
+            } else {
+                // Add new transaction
+                transactions.push(transactionData);
+            }
+
+            // Save back to localStorage
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+
+            // Create and dispatch transaction event
+            const event = new CustomEvent('transaction-added', {
+                detail: {
+                    type: currentType,
+                    amount: parseFloat(currentAmount)
+                }
+            });
+            window.dispatchEvent(event);
+            
+            // Show success message and redirect
+            showPopup('success', 'Success!', isEditing ? 'Entry updated successfully!' : 'Entry added successfully!', false, () => {
+                window.location.href = isEditing ? 'history.html' : 'index.html';
+            });
+        });
+
+        // Set current date and time as default
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        document.getElementById('datetimePicker').value = now.toISOString().slice(0, 16);
+
+        // Back button functionality
+        document.querySelector('.back-btn').addEventListener('click', function() {
+            window.location.href = 'index.html';
+        });
+    });
+    </script>
+    <script src="loader.js"></script>
+    <script src="currency.js"></script>
+</body>
+</html>

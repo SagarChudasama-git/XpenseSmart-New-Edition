@@ -1,0 +1,21 @@
+.popup-message p {
+    margin: 0.5rem 0;
+    color: #2c3e50;
+    line-height: 1.6;
+}
+
+.popup-message a {
+    color: #3498db;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.popup-message a:hover {
+    color: #2980b9;
+    text-decoration: underline;
+}
+
+.popup-message strong {
+    color: #34495e;
+    font-weight: 600;
+}
