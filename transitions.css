@@ -48,7 +48,7 @@ body.fade-out {
     will-change: opacity;
 }
 
-/* FAB Button Animations */
+/* FAB Button Animations - Optimized for performance */
 .fab {
     /* Force these styles to take precedence */
     position: fixed !important;
@@ -57,13 +57,14 @@ body.fade-out {
     transform: translateX(-50%) !important;
     z-index: 1001 !important;
     
-    /* Smooth transitions */
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
-                opacity 0.3s ease,
-                visibility 0.3s ease,
-                box-shadow 0.3s ease,
-                background-color 0.3s ease !important;
+    /* Optimized transitions with hardware acceleration */
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                opacity 0.2s ease !important;
     will-change: transform, opacity;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
 }
 
 .fab:hover {

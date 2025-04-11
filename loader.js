@@ -1,4 +1,4 @@
-// Loader management
+// Loader management - Optimized for performance
 document.addEventListener('DOMContentLoaded', function() {
     // Prevent content flash during page load
     document.body.style.overflow = 'hidden';
@@ -6,7 +6,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (pageContent) {
         pageContent.classList.remove('active');
     }
-    // Create loader container
+    
+    // Create loader container with optimized styles
     const loaderContainer = document.createElement('div');
     loaderContainer.id = 'loader-container';
     loaderContainer.style.cssText = `
@@ -22,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
         z-index: 9999;
         opacity: 1;
         transition: opacity 0.3s ease-out;
+        will-change: opacity;
     `;
 
     // Add the dot spinner HTML
@@ -41,28 +43,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add to document
     document.body.appendChild(loaderContainer);
 
-    // Track animation cycles
-    let halfCycleComplete = false;
-    const middleDot = loaderContainer.querySelector('.dot-spinner__dot:nth-child(4)');
-    
-    // Function to handle animation end
-    const handleAnimationIteration = () => {
-        halfCycleComplete = true;
-        if (document.readyState === 'complete') {
-            hideLoader();
-        }
-    };
+    // Use a simpler approach to hide loader
+    // This avoids the complex animation tracking that was causing lag
+    const hideLoaderTimeout = setTimeout(hideLoader, 1500);
 
-    // Add animation iteration listener to the middle dot
-    middleDot.addEventListener('animationiteration', handleAnimationIteration);
-
-    // Hide loader when page is loaded and half animation cycle is complete
+    // Hide loader when page is loaded
     window.addEventListener('load', function() {
-        setTimeout(() => {
-            if (halfCycleComplete) {
-                hideLoader();
-            }
-        }, 1000);
+        // Clear the timeout if the page loads before the timeout
+        clearTimeout(hideLoaderTimeout);
+        // Small delay to ensure UI is ready
+        setTimeout(hideLoader, 300);
     });
 });
 

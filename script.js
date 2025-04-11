@@ -350,15 +350,24 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Initialize FAB button position
+// Initialize FAB button position with optimized performance
 function initFAB() {
     const fabButton = document.querySelector('.fab');
     if (fabButton) {
-        fabButton.style.position = 'fixed';
-        fabButton.style.bottom = '85px';
-        fabButton.style.left = '50%';
-        fabButton.style.transform = 'translateX(-50%)';
-        fabButton.style.opacity = '1';
+        // Apply styles in a single operation to reduce reflows
+        fabButton.style.cssText = `
+            position: fixed;
+            bottom: 85px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 1;
+            will-change: transform, opacity;
+            z-index: 1001;
+            pointer-events: auto;
+        `;
+        
+        // Force a repaint to ensure the button is visible immediately
+        fabButton.offsetHeight;
     }
 }
 
