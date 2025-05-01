@@ -1,4 +1,4 @@
-![XpenseSmart](https://github.com/user-attachments/assets/7cb6053e-233b-4bf4-8ca1-5628ae3ee6b2)
+![XpenseSmart](https://github.com/user-attachments/assets/11e6e706-2a34-456c-aea4-6a52831b4a94)
 
 ## About
 
