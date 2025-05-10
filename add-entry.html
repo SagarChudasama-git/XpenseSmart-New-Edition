@@ -99,14 +99,21 @@
         
         .toggle-btn {
             display: flex;
-            padding: 0.5rem 2rem;
+            align-items: center;
+            justify-content: center;
+            padding: 0.8rem 2rem;
             border: 2px solid #3498db;
             background: transparent;
             color: #3498db;
-            gap: 50px;
+            gap: 0.5rem;
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .toggle-btn i {
+            font-size: 1.1rem;
         }
         
         .toggle-btn.active {
@@ -178,6 +185,76 @@
             border-radius: 8px;
             font-family: 'Poppins', sans-serif;
         }
+
+        .category-container {
+            margin: 1.5rem 0;
+        }
+
+        .category-grid {
+            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 1rem;
+            padding: 0.5rem;
+        }
+
+        .category-grid.active {
+            display: grid;
+        }
+
+        .category-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            gap: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .category-item i {
+            font-size: 1.5rem;
+            color: #3498db;
+        }
+
+        .category-item span {
+            font-size: 0.9rem;
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        .category-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .category-item.selected {
+            border-color: #3498db;
+            background: #f0f7ff;
+        }
+
+        @media (max-width: 480px) {
+            .category-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 0.8rem;
+            }
+
+            .category-item {
+                padding: 0.8rem;
+            }
+
+            .category-item i {
+                font-size: 1.2rem;
+            }
+
+            .category-item span {
+                font-size: 0.8rem;
+            }
+        }
     </style>
 </head>
 <body style="background-color: #f1f1f2;">
@@ -213,33 +290,75 @@
         <div class="page-content page-transition active content-loaded" style="margin-top: 60px; padding: 1rem;">
             <!-- Entry Type Toggle -->
             <div class="entry-type-toggle">
-                <button class="toggle-btn active" id="expenseBtn">Expense</button>
-                <button class="toggle-btn" id="incomeBtn">Income</button>
+                <button class="toggle-btn active" id="expenseBtn">
+                    <i class="fas fa-minus-circle"></i>
+                    <span>Expense</span>
+                </button>
+                <button class="toggle-btn" id="incomeBtn">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Income</span>
+                </button>
             </div>
 
             <!-- Category Selection -->
-            <select class="category-select" id="categorySelect">
-                <option value="" disabled selected>Select Category</option>
-                <!-- Expense Categories -->
-                <optgroup label="Expense Categories" id="expenseCategories">
-                    <option value="food">Food & Dining</option>
-                    <option value="transportation">Transportation</option>
-                    <option value="utilities">Utilities</option>
-                    <option value="shopping">Shopping</option>
-                    <option value="entertainment">Entertainment</option>
-                    <option value="health">Health</option>
-                    <option value="education">Education</option>
-                    <option value="other_expense">Other</option>
-                </optgroup>
-                <!-- Income Categories -->
-                <optgroup label="Income Categories" id="incomeCategories" style="display: none;">
-                    <option value="salary">Salary</option>
-                    <option value="business">Business</option>
-                    <option value="investment">Investment</option>
-                    <option value="freelance">Freelance</option>
-                    <option value="other_income">Other</option>
-                </optgroup>
-            </select>
+            <div class="category-container">
+                <div id="expenseCategories" class="category-grid active">
+                    <div class="category-item" data-value="food">
+                        <i class="fas fa-utensils"></i>
+                        <span>Food & Dining</span>
+                    </div>
+                    <div class="category-item" data-value="transportation">
+                        <i class="fas fa-car"></i>
+                        <span>Transportation</span>
+                    </div>
+                    <div class="category-item" data-value="utilities">
+                        <i class="fas fa-bolt"></i>
+                        <span>Utilities</span>
+                    </div>
+                    <div class="category-item" data-value="shopping">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span>Shopping</span>
+                    </div>
+                    <div class="category-item" data-value="entertainment">
+                        <i class="fas fa-film"></i>
+                        <span>Entertainment</span>
+                    </div>
+                    <div class="category-item" data-value="health">
+                        <i class="fas fa-heartbeat"></i>
+                        <span>Health</span>
+                    </div>
+                    <div class="category-item" data-value="education">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Education</span>
+                    </div>
+                    <div class="category-item" data-value="other_expense">
+                        <i class="fas fa-ellipsis-h"></i>
+                        <span>Other</span>
+                    </div>
+                </div>
+
+                <div id="incomeCategories" class="category-grid">
+                    <div class="category-item" data-value="salary">
+                        <i class="fas fa-money-check-alt"></i>
+                        <span>Salary</span>
+                    </div>
+                    <div class="category-item" data-value="business">
+                        <i class="fas fa-briefcase"></i>
+                        <span>Business</span>
+                    </div>
+                    <div class="category-item" data-value="investment">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Investment</span>
+                    </div>
+                    <div class="category-item" data-value="other_income">
+                        <i class="fas fa-ellipsis-h"></i>
+                        <span>Other</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hidden input to store selected category -->
+            <input type="hidden" id="selectedCategory" name="category">
 
             <!-- Notes Area -->
             <textarea class="notes-area" placeholder="Add notes here..."></textarea>
@@ -298,22 +417,42 @@
 
         // Toggle between expense and income
         const toggleBtns = document.querySelectorAll('.toggle-btn');
+        const selectedCategoryInput = document.getElementById('selectedCategory');
+        
         toggleBtns.forEach(btn => {
             btn.addEventListener('click', function() {
                 toggleBtns.forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
                 currentType = this.id === 'expenseBtn' ? 'expense' : 'income';
                 
-                // Show/hide appropriate category groups
+                // Show/hide appropriate category grids
                 if (currentType === 'expense') {
-                    expenseCategories.style.display = '';
-                    incomeCategories.style.display = 'none';
-                    categorySelect.selectedIndex = 0; // Reset to default option
+                    expenseCategories.classList.add('active');
+                    incomeCategories.classList.remove('active');
                 } else {
-                    expenseCategories.style.display = 'none';
-                    incomeCategories.style.display = '';
-                    categorySelect.selectedIndex = 0; // Reset to default option
+                    expenseCategories.classList.remove('active');
+                    incomeCategories.classList.add('active');
                 }
+                
+                // Clear selected category
+                document.querySelectorAll('.category-item').forEach(item => {
+                    item.classList.remove('selected');
+                });
+                selectedCategoryInput.value = '';
+            });
+        });
+
+        // Handle category selection
+        document.querySelectorAll('.category-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // Remove selection from all items in the same grid
+                this.closest('.category-grid').querySelectorAll('.category-item').forEach(i => {
+                    i.classList.remove('selected');
+                });
+                
+                // Add selection to clicked item
+                this.classList.add('selected');
+                selectedCategoryInput.value = this.dataset.value;
             });
         });
 
@@ -372,12 +511,9 @@
                 editIndex = editTransaction.index;
                 currentType = editTransaction.type;
                 currentAmount = editTransaction.amount.toString();
-                updateDisplayAmount(); // Use the function to properly display with currency symbol
-                categorySelect.value = editTransaction.category.toLowerCase();
-                notesArea.value = editTransaction.notes;
-                document.getElementById('datetimePicker').value = editTransaction.date;
+                updateDisplayAmount();
                 
-                // Set correct toggle button
+                // Set correct toggle button and show appropriate categories
                 toggleBtns.forEach(btn => {
                     btn.classList.remove('active');
                     if ((btn.id === 'expenseBtn' && currentType === 'expense') ||
@@ -386,12 +522,25 @@
                     }
                 });
                 
-                // Show correct category group
+                // Show correct category grid and select the category
                 if (currentType === 'expense') {
-                    expenseCategories.style.display = '';
+                    expenseCategories.classList.add('active');
+                    incomeCategories.classList.remove('active');
                 } else {
-                    incomeCategories.style.display = '';
+                    expenseCategories.classList.remove('active');
+                    incomeCategories.classList.add('active');
                 }
+                
+                // Select the correct category
+                const categoryValue = editTransaction.category.toLowerCase().replace(/\s+/g, '_');
+                const categoryItem = document.querySelector(`.category-item[data-value="${categoryValue}"]`);
+                if (categoryItem) {
+                    categoryItem.classList.add('selected');
+                    selectedCategoryInput.value = categoryValue;
+                }
+                
+                notesArea.value = editTransaction.notes;
+                document.getElementById('datetimePicker').value = editTransaction.date;
                 
                 // Clear the stored edit transaction
                 localStorage.removeItem('editTransaction');
@@ -465,7 +614,7 @@
 
         // Save button functionality
         saveBtn.addEventListener('click', function() {
-            const category = categorySelect.value;
+            const category = selectedCategoryInput.value;
             const notes = notesArea.value;
             const date = document.getElementById('datetimePicker').value;
 
@@ -492,21 +641,20 @@
                 return str.charAt(0).toUpperCase() + str.slice(1);
             };
 
-            const transactionData = {
+            const newTransaction = {
                 type: currentType,
-                amount: parseFloat(parseFloat(currentAmount).toFixed(2)), // Ensure consistent decimal places
-                category: capitalizeFirstLetter(category),
-                notes: notes ? capitalizeFirstLetter(notes) : '',
+                category: capitalizeFirstLetter(category.replace(/_/g, ' ')),
+                amount: currentAmount,
                 date: date,
-                currency: currentCurrency.code // Store currency code with transaction
+                notes: notes
             };
 
-            if (editIndex !== -1) {
+            if (editIndex >= 0) {
                 // Update existing transaction
-                transactions[editIndex] = transactionData;
+                transactions[editIndex] = newTransaction;
             } else {
                 // Add new transaction
-                transactions.push(transactionData);
+                transactions.push(newTransaction);
             }
 
             // Save back to localStorage
@@ -522,8 +670,8 @@
             window.dispatchEvent(event);
             
             // Show success message and redirect
-            showPopup('success', 'Success!', isEditing ? 'Entry updated successfully!' : 'Entry added successfully!', false, () => {
-                window.location.href = isEditing ? 'history.html' : 'index.html';
+            showPopup('success', 'Success!', 'Transaction saved successfully', () => {
+                window.location.href = 'index.html';
             });
         });
 
