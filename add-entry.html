@@ -304,15 +304,16 @@
                 this.classList.add('active');
                 currentType = this.id === 'expenseBtn' ? 'expense' : 'income';
                 
-                // Toggle category options
+                // Show/hide appropriate category groups
                 if (currentType === 'expense') {
                     expenseCategories.style.display = '';
                     incomeCategories.style.display = 'none';
+                    categorySelect.selectedIndex = 0; // Reset to default option
                 } else {
                     expenseCategories.style.display = 'none';
                     incomeCategories.style.display = '';
+                    categorySelect.selectedIndex = 0; // Reset to default option
                 }
-                categorySelect.value = ''; // Reset selection
             });
         });
 
