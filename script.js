@@ -795,3 +795,438 @@ function logActivity(action, details = {}) {
         console.error('Failed to log activity:', error);
     }
 }
+
+function setupTransactionTypeHandler() {
+    const transactionType = document.getElementById('transactionType');
+    const categorySelect = document.getElementById('category');
+
+    transactionType.addEventListener('change', function() {
+        // Clear existing options
+        categorySelect.innerHTML = '';
+        
+        // Get appropriate categories based on type
+        const categories = this.value === 'income' ? incomeCategories : expenseCategories;
+        
+        // Populate category dropdown
+        categories.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat;
+            option.textContent = cat;
+            categorySelect.appendChild(option);
+        });
+    });
+}
+
+// Make sure to call this during form initialization
+function initTransactionForm() {
+    setupTransactionTypeHandler();
+    updateSummary();
+    updateTransactionHistory();
+}
+
+// Define separate category arrays
+const incomeCategories = ['Salary', 'Freelance', 'Investments', 'Gifts'];
+const expenseCategories = ['Food', 'Transport', 'Housing', 'Utilities', 'Entertainment'];
+
+// Export Reports functionality - DEPRECATED - Using exportData() from data-management.js instead
+/*
+function exportReports() {
+    const transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+    if (transactions.length === 0) {
+        showNotification('No transactions to export', 'warning');
+        return;
+    }
+
+    // Show loading popup
+    const loadingPopup = document.createElement('div');
+    loadingPopup.className = 'confirmation-popup active';
+    
+    // Blur the FAB button when popup is open
+    const fabButton = document.querySelector('.fab');
+    if (fabButton) {
+        fabButton.style.opacity = '0';
+        fabButton.style.pointerEvents = 'none';
+    }
+    
+    loadingPopup.innerHTML = `
+        <div class="confirmation-content">
+            <h3><i class="fas fa-spinner fa-spin"></i> Generating PDF</h3>
+            <p>Please wait while we generate your report...</p>
+        </div>
+    `;
+    
+    document.body.appendChild(loadingPopup);
+
+    // Use the safe PDF export function from data-management.js
+    setTimeout(() => {
+        safePDFExport(function() {
+            try {
+                const doc = createPDFReport();
+                if (doc) {
+                    // Remove loading popup
+                    loadingPopup.remove();
+                    
+                    // Save the PDF
+                    doc.save('xpensesmart_report.pdf');
+                    
+                    // Show success popup
+                    const successPopup = document.createElement('div');
+                    successPopup.className = 'confirmation-popup active';
+                    
+                    successPopup.innerHTML = `
+                        <div class="confirmation-content">
+                            <h3><i class="fas fa-check-circle" style="color: #00b894;"></i> Success</h3>
+                            <p>Your report has been generated successfully</p>
+                            <div class="confirmation-buttons">
+                                <button class="cancel-btn">OK</button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    document.body.appendChild(successPopup);
+                    
+                    // Handle OK button
+                    successPopup.querySelector('.cancel-btn').addEventListener('click', () => {
+                        successPopup.remove();
+                        if (fabButton) {
+                            fabButton.style.opacity = '1';
+                            fabButton.style.pointerEvents = 'auto';
+                        }
+                    });
+                    
+                    // Close when clicking outside
+                    successPopup.addEventListener('click', function(e) {
+                        if (e.target === successPopup) {
+                            successPopup.remove();
+                            if (fabButton) {
+                                fabButton.style.opacity = '1';
+                                fabButton.style.pointerEvents = 'auto';
+                            }
+                        }
+                    });
+                } else {
+                    loadingPopup.remove();
+                    showNotification('Failed to create PDF', 'error');
+                    if (fabButton) {
+                        fabButton.style.opacity = '1';
+                        fabButton.style.pointerEvents = 'auto';
+                    }
+                }
+            } catch (error) {
+                console.error('PDF Export Error:', error);
+                loadingPopup.remove();
+                showNotification('Failed to export report. Please try again.', 'error');
+                if (fabButton) {
+                    fabButton.style.opacity = '1';
+                    fabButton.style.pointerEvents = 'auto';
+                }
+            }
+        });
+    }, 800); // Small delay to show loading popup
+}
+*/
+
+// Reset confirmation popup
+function showResetConfirmationPopup() {
+    const popup = document.createElement('div');
+    popup.className = 'confirmation-popup active';
+    
+    // Blur the FAB button when popup is open
+    const fabButton = document.querySelector('.fab');
+    if (fabButton) {
+        fabButton.style.opacity = '0';
+        fabButton.style.pointerEvents = 'none';
+    }
+    
+    popup.innerHTML = `
+        <div class="confirmation-content">
+            <h3><i class="fas fa-exclamation-triangle"></i>Reset All Data</h3>
+            <p>Are you sure you want to delete all transactions? This action cannot be undone.</p>
+            <div class="confirmation-buttons">
+                <button class="cancel-btn">Cancel</button>
+                <button class="delete-btn">Delete All</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(popup);
+    
+    // Handle cancel button
+    popup.querySelector('.cancel-btn').addEventListener('click', () => {
+        popup.remove();
+        if (fabButton) {
+            fabButton.style.opacity = '1';
+            fabButton.style.pointerEvents = 'auto';
+        }
+    });
+    
+    // Handle delete button
+    popup.querySelector('.delete-btn').addEventListener('click', () => {
+        // Remove transactions from local storage
+        localStorage.removeItem('transactions');
+        
+        // Reset UI
+        const expenseElement = document.querySelector('.expense .amount');
+        const incomeElement = document.querySelector('.income .amount');
+        const totalElement = document.querySelector('.total .amount');
+        
+        if (expenseElement) {
+            expenseElement.setAttribute('data-amount', '0.00');
+            expenseElement.textContent = formatCurrency(0);
+        }
+        if (incomeElement) {
+            incomeElement.setAttribute('data-amount', '0.00');
+            incomeElement.textContent = formatCurrency(0);
+        }
+        if (totalElement) {
+            totalElement.setAttribute('data-amount', '0.00');
+            totalElement.textContent = formatCurrency(0);
+        }
+        
+        // Update transaction history
+        const transactionList = document.getElementById('transactionList');
+        if (transactionList) {
+            transactionList.innerHTML = `
+                <div class="no-transactions">
+                    <div class="empty-state">
+                        <p style="text-align: center; margin-top: 70px;">No recent transactions</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        popup.remove();
+        if (fabButton) {
+            fabButton.style.opacity = '1';
+            fabButton.style.pointerEvents = 'auto';
+        }
+        showNotification('All data has been reset', 'success');
+    });
+    
+    // Close when clicking outside
+    popup.addEventListener('click', function(e) {
+        if (e.target === popup) {
+            popup.remove();
+            if (fabButton) {
+                fabButton.style.opacity = '1';
+                fabButton.style.pointerEvents = 'auto';
+            }
+        }
+    });
+}
+
+// Notification system
+function showNotification(message, type = 'info', persistent = false) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    
+    // Create notification content
+    const icon = document.createElement('i');
+    icon.className = 'fas';
+    
+    // Set icon based on type
+    switch (type) {
+        case 'success':
+            icon.className += ' fa-check-circle';
+            break;
+        case 'error':
+            icon.className += ' fa-exclamation-circle';
+            break;
+        case 'warning':
+            icon.className += ' fa-exclamation-triangle';
+            break;
+        default:
+            icon.className += ' fa-info-circle';
+    }
+    
+    // Create message element
+    const messageEl = document.createElement('span');
+    messageEl.textContent = message;
+    
+    // Add loading spinner for persistent notifications
+    if (persistent) {
+        const spinner = document.createElement('div');
+        spinner.className = 'spinner';
+        notification.appendChild(spinner);
+    }
+    
+    // Add icon and message to notification
+    notification.appendChild(icon);
+    notification.appendChild(messageEl);
+    
+    // Add close button if not persistent
+    if (!persistent) {
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'close-notification';
+        closeBtn.innerHTML = '&times;';
+        closeBtn.addEventListener('click', () => {
+            notification.classList.add('fade-out');
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        });
+        notification.appendChild(closeBtn);
+    }
+    
+    // Add notification to document
+    document.body.appendChild(notification);
+    
+    // Auto-remove non-persistent notifications after 4 seconds
+    if (!persistent) {
+        setTimeout(() => {
+            notification.classList.add('fade-out');
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 4000);
+    }
+    
+    // Return notification element so it can be removed later
+    return notification;
+}
+
+// Currency Selection Popup
+function showCurrencySelectionPopup() {
+    const popup = document.createElement('div');
+    popup.className = 'confirmation-popup active';
+    
+    // Blur the FAB button when popup is open
+    const fabButton = document.querySelector('.fab');
+    if (fabButton) {
+        fabButton.style.opacity = '0';
+        fabButton.style.pointerEvents = 'none';
+    }
+    
+    const popularCurrencies = [
+        { code: 'INR', symbol: '₹', name: 'Indian Rupee' },
+        { code: 'USD', symbol: '$', name: 'US Dollar' },
+        { code: 'EUR', symbol: '€', name: 'Euro' },
+        { code: 'GBP', symbol: '£', name: 'British Pound' },
+        { code: 'JPY', symbol: '¥', name: 'Japanese Yen' },
+        { code: 'CAD', symbol: 'C$', name: 'Canadian Dollar' },
+        { code: 'AUD', symbol: 'A$', name: 'Australian Dollar' },
+        { code: 'CNY', symbol: '¥', name: 'Chinese Yuan' }
+    ];
+    
+    let currencyOptionsHTML = '';
+    popularCurrencies.forEach(currency => {
+        currencyOptionsHTML += `
+            <div class="currency-option" data-code="${currency.code}" data-symbol="${currency.symbol}">
+                <span class="currency-symbol">${currency.symbol}</span>
+                <span class="currency-details">
+                    <span class="currency-code">${currency.code}</span>
+                    <span class="currency-name">${currency.name}</span>
+                </span>
+            </div>
+        `;
+    });
+    
+    popup.innerHTML = `
+        <div class="confirmation-content currency-popup">
+            <h3><i class="fas fa-money-bill-wave"></i> Select Currency</h3>
+            <p>Choose your preferred currency for the app</p>
+            <div class="currency-options">
+                ${currencyOptionsHTML}
+            </div>
+            <div class="confirmation-buttons">
+                <button class="cancel-btn">Cancel</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(popup);
+    
+    // Add event listeners to currency options
+    const options = popup.querySelectorAll('.currency-option');
+    options.forEach(option => {
+        option.addEventListener('click', function() {
+            const code = this.getAttribute('data-code');
+            const symbol = this.getAttribute('data-symbol');
+            
+            // Save to localStorage
+            localStorage.setItem('currency', JSON.stringify({
+                code: code,
+                symbol: symbol
+            }));
+            
+            // Close popup
+            popup.remove();
+            if (fabButton) {
+                fabButton.style.opacity = '1';
+                fabButton.style.pointerEvents = 'auto';
+            }
+            
+            // Update currency displays
+            const event = new CustomEvent('currency-changed');
+            window.dispatchEvent(event);
+            
+            showNotification(`Currency changed to ${code}`, 'success');
+        });
+    });
+    
+    // Handle cancel button
+    popup.querySelector('.cancel-btn').addEventListener('click', () => {
+        popup.remove();
+        if (fabButton) {
+            fabButton.style.opacity = '1';
+            fabButton.style.pointerEvents = 'auto';
+        }
+    });
+    
+    // Close when clicking outside
+    popup.addEventListener('click', function(e) {
+        if (e.target === popup) {
+            popup.remove();
+            if (fabButton) {
+                fabButton.style.opacity = '1';
+                fabButton.style.pointerEvents = 'auto';
+            }
+        }
+    });
+}
+
+// Get current currency from localStorage
+function getCurrentCurrency() {
+    const currency = localStorage.getItem('currency');
+    return currency ? JSON.parse(currency) : { code: 'INR', symbol: '₹' }; // Default to INR
+}
+
+// Format currency with the current currency symbol
+function formatCurrency(amount) {
+    const currency = getCurrentCurrency();
+    return `${currency.symbol}${parseFloat(amount).toFixed(2)}`;
+}
+
+// Activity logging function
+function logActivity(action, details = {}) {
+    try {
+        // Get existing logs
+        const logs = JSON.parse(localStorage.getItem('activity_logs') || '[]');
+        
+        // Create new log entry
+        const log = {
+            timestamp: new Date().toISOString(),
+            action: action,
+            details: details
+        };
+        
+        // Add to logs array (limit to 100 most recent)
+        logs.unshift(log);
+        if (logs.length > 100) {
+            logs.length = 100; // Truncate to 100 entries
+        }
+        
+        // Save back to localStorage
+        localStorage.setItem('activity_logs', JSON.stringify(logs));
+        
+        // Optionally, you could send logs to a server here
+        console.log(`Activity logged: ${action}`);
+    } catch (error) {
+        console.error('Failed to log activity:', error);
+    }
+}
