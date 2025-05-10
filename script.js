@@ -199,6 +199,13 @@ document.addEventListener('DOMContentLoaded', function() {
         sidebar.classList.add('active');
         sidebarOverlay.classList.add('active');
         document.body.style.overflow = 'hidden'; // Prevent scrolling when sidebar is open
+        
+        // Completely hide FAB button when sidebar is open
+        if (fab) {
+            fab.style.opacity = '0';
+            fab.style.pointerEvents = 'none';
+            fab.style.visibility = 'hidden';
+        }
     });
 
     // Close sidebar function
@@ -212,6 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (fab && !searchPanel?.classList.contains('active')) {
                 fab.style.opacity = '1';
                 fab.style.pointerEvents = 'auto';
+                fab.style.visibility = 'visible';
             }
         }, 300);
     }
@@ -281,6 +289,7 @@ document.addEventListener('DOMContentLoaded', function() {
         sidebarToggle.addEventListener('click', function() {
             fab.style.opacity = '0';
             fab.style.pointerEvents = 'none';
+            fab.style.visibility = 'hidden';
         });
         
         // Also restore FAB button when sidebar is closed
@@ -288,6 +297,7 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => {
                 fab.style.opacity = '1';
                 fab.style.pointerEvents = 'auto';
+                fab.style.visibility = 'visible';
             }, 300); // Small delay to match animation
         });
         
@@ -295,6 +305,7 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => {
                 fab.style.opacity = '1';
                 fab.style.pointerEvents = 'auto';
+                fab.style.visibility = 'visible';
             }, 300); // Small delay to match animation
         });
         
@@ -305,9 +316,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (sidebarOverlay.classList.contains('active')) {
                         fab.style.opacity = '0';
                         fab.style.pointerEvents = 'none';
+                        fab.style.visibility = 'hidden';
                     } else {
                         fab.style.opacity = '1';
                         fab.style.pointerEvents = 'auto';
+                        fab.style.visibility = 'visible';
                     }
                 }
             });
@@ -354,20 +367,29 @@ document.addEventListener('DOMContentLoaded', function() {
 function initFAB() {
     const fabButton = document.querySelector('.fab');
     if (fabButton) {
-        // Apply styles in a single operation to reduce reflows
-        fabButton.style.cssText = `
-            position: fixed;
-            bottom: 85px;
-            left: 50%;
-            transform: translateX(-50%);
-            opacity: 1;
-            will-change: transform, opacity;
-            z-index: 1001;
-            pointer-events: auto;
-        `;
+        // Pre-set critical properties to make button responsive immediately
+        fabButton.style.pointerEvents = 'auto';
+        fabButton.style.opacity = '1';
         
-        // Force a repaint to ensure the button is visible immediately
-        fabButton.offsetHeight;
+        // Apply styles in a single operation to reduce reflows
+        requestAnimationFrame(() => {
+            fabButton.style.cssText = `
+                position: fixed;
+                bottom: 85px;
+                left: 50%;
+                transform: translateX(-50%);
+                opacity: 1;
+                will-change: transform, opacity;
+                z-index: 1001;
+                pointer-events: auto;
+                visibility: visible;
+                transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                            opacity 0.2s ease;
+            `;
+            
+            // Force a repaint to ensure the button is visible immediately
+            fabButton.offsetHeight;
+        });
     }
 }
 

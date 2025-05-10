@@ -1,13 +1,38 @@
 // Loader management - Optimized for performance
 document.addEventListener('DOMContentLoaded', function() {
-    // Prevent content flash during page load
-    document.body.style.overflow = 'hidden';
+    // Prevent content flash during page load but don't block rendering
+    document.body.classList.add('loading');
     const pageContent = document.querySelector('.page-transition');
     if (pageContent) {
         pageContent.classList.remove('active');
     }
     
-    // Create loader container with optimized styles
+    // Use a pre-defined hidden loader instead of creating one dynamically
+    const loaderContainer = document.getElementById('loader-container') || createLoader();
+    
+    // Show the loader immediately
+    if (loaderContainer) {
+        loaderContainer.style.display = 'flex';
+        loaderContainer.style.opacity = '1';
+    }
+    
+    // Use requestAnimationFrame for smoother rendering
+    requestAnimationFrame(() => {
+        // Hide loader faster - don't wait as long
+        const hideLoaderTimeout = setTimeout(hideLoader, 800);
+        
+        // Hide loader when page is loaded
+        window.addEventListener('load', function() {
+            // Clear the timeout if the page loads before the timeout
+            clearTimeout(hideLoaderTimeout);
+            // Hide immediately on load
+            requestAnimationFrame(hideLoader);
+        });
+    });
+});
+
+// Function to create loader (only called if needed)
+function createLoader() {
     const loaderContainer = document.createElement('div');
     loaderContainer.id = 'loader-container';
     loaderContainer.style.cssText = `
@@ -42,23 +67,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add to document
     document.body.appendChild(loaderContainer);
-
-    // Use a simpler approach to hide loader
-    // This avoids the complex animation tracking that was causing lag
-    const hideLoaderTimeout = setTimeout(hideLoader, 1500);
-
-    // Hide loader when page is loaded
-    window.addEventListener('load', function() {
-        // Clear the timeout if the page loads before the timeout
-        clearTimeout(hideLoaderTimeout);
-        // Small delay to ensure UI is ready
-        setTimeout(hideLoader, 300);
-    });
-});
+    return loaderContainer;
+}
 
 // Function to show loader
 function showLoader() {
-    const loader = document.getElementById('loader-container');
+    const loader = document.getElementById('loader-container') || createLoader();
     if (loader) {
         loader.style.display = 'flex';
         loader.style.opacity = '1';
@@ -70,14 +84,17 @@ function hideLoader() {
     const loader = document.getElementById('loader-container');
     if (loader) {
         loader.style.opacity = '0';
-        loader.style.transition = 'opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+        loader.style.transition = 'opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
+        
+        // Use shorter timeout for a faster transition
         setTimeout(() => {
             loader.style.display = 'none';
+            document.body.classList.remove('loading');
             document.body.style.overflow = 'auto';
             const pageContent = document.querySelector('.page-transition');
             if (pageContent) {
                 pageContent.classList.add('active');
             }
-        }, 400);
+        }, 300);
     }
 }

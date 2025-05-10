@@ -94,7 +94,7 @@
             justify-content: center;
             gap: 1rem;
             margin: 0.5rem 0;
-            margin-top: 1px;
+            margin-top: 25px;
         }
         
         .toggle-btn {
@@ -198,19 +198,19 @@
     <!-- Main Content -->
     <div class="main-content">
         <!-- Header -->
-        <header class="header">
+        <header class="header" style="position: fixed; width: 100%; top: 0; left: 0; z-index: 1000; background: #2c3e50; padding: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
             <div class="header-left">
                 <a href="index.html" class="back-btn">
                     <i class="fas fa-arrow-left"></i>
                 </a>
             </div>
             <div class="header-center">
-                <h2 style="color: #f5f5f5; margin-right: 20vh;">Add Entry</h2>
+                <h2 style="color: #f5f5f5; margin-right: 20vh; margin: 0;" id="headerText">Add Entry</h2>
             </div>
         </header>
 
         <!-- Page Content -->
-        <div class="page-content page-transition active content-loaded">
+        <div class="page-content page-transition active content-loaded" style="margin-top: 60px; padding: 1rem;">
             <!-- Entry Type Toggle -->
             <div class="entry-type-toggle">
                 <button class="toggle-btn active" id="expenseBtn">Expense</button>
@@ -362,13 +362,16 @@
         const urlParams = new URLSearchParams(window.location.search);
         const isEditing = urlParams.get('edit') === 'true';
         
+        // Update header text based on edit mode
+        const headerText = document.getElementById('headerText');
         if (isEditing) {
             const editTransaction = JSON.parse(localStorage.getItem('editTransaction'));
+            headerText.textContent = 'Edit ' + (editTransaction && editTransaction.type === 'income' ? 'Income' : 'Expense');
             if (editTransaction) {
                 editIndex = editTransaction.index;
                 currentType = editTransaction.type;
                 currentAmount = editTransaction.amount.toString();
-                calcDisplay.textContent = currentAmount;
+                updateDisplayAmount(); // Use the function to properly display with currency symbol
                 categorySelect.value = editTransaction.category.toLowerCase();
                 notesArea.value = editTransaction.notes;
                 document.getElementById('datetimePicker').value = editTransaction.date;

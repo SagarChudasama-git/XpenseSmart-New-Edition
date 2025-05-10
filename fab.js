@@ -3,20 +3,25 @@ document.addEventListener('DOMContentLoaded', function() {
     const fabButton = document.querySelector('.fab-button');
     
     if (fabButton) {
-        // Add touchstart event listener for mobile devices
-        fabButton.addEventListener('touchstart', handleFabClick, { passive: true });
-        // Keep click event for desktop compatibility
-        fabButton.addEventListener('click', handleFabClick);
+        // Use a single event handler for both touch and click
+        // with proper touch handling
         
         // Prevent ghost clicks by adding a small delay
         let lastTapTime = 0;
-        function handleFabClick(e) {
+        let isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        
+        // Pre-bind the event handler to avoid creation during event
+        const handleFabClick = function(e) {
+            // Prevent default behavior immediately for touch events
+            if (e.type === 'touchstart') {
+                e.preventDefault();
+            }
+            
             const currentTime = new Date().getTime();
             const tapDelay = currentTime - lastTapTime;
             
             // Prevent double triggers within 300ms
             if (tapDelay < 300 && tapDelay > 0) {
-                e.preventDefault();
                 return false;
             }
             
@@ -29,6 +34,13 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => {
                 window.location.href = 'add-entry.html';
             }, 300);
+        };
+        
+        // Add proper event listeners with correct options
+        if (isTouchDevice) {
+            fabButton.addEventListener('touchstart', handleFabClick, { passive: false });
+        } else {
+            fabButton.addEventListener('click', handleFabClick);
         }
     }
 });

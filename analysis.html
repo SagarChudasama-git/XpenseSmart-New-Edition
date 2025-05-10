@@ -11,18 +11,84 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        body {
+            overflow: hidden;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .fixed-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header {
+            background-color: #2c3e50;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 0 15px;
+        }
+
+        .header-center {
+            display: flex;
+            justify-content: flex-start;
+            flex: 1;
+        }
+
+        .app-title {
+            font-size: 1.5rem;
+            color: white;
+            margin: 0;
+            text-align: left;
+            font-weight: 500;
+        }
+
+        .header-right {
+            margin-left: auto;
+        }
+
+        .scrollable-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding-bottom: 70px; /* Space for bottom navigation */
+            width: 100%;
+            box-sizing: border-box;
+        }
+
         .transaction-summary {
             display: flex;
             justify-content: space-between;
             padding: 0.5rem;
             background: #2c3e50;
-            margin: -20px;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            width: 100%;
+            box-sizing: border-box;
+            z-index: 10;
+            position: relative;
         }
     
         .summary-item {
             flex: 1;
             text-align: center;
             padding: 0.5rem;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .summary-item:last-child {
+            border-right: none;
         }
     
         .summary-item h3 {
@@ -40,13 +106,19 @@
         .summary-item.expense .amount {
             color: #ff7675;
         }
+        
+        .summary-item.income .amount {
+            color: #00b894;
+        }
     
         .chart-container {
             display: flex;
             flex-direction: column;
             gap: 2rem;
             padding: 1rem;
-            margin-top: 2rem;
+            margin-top: 1rem;
+            width: 100%;
+            box-sizing: border-box;
         }
     
         .chart-wrapper {
@@ -55,33 +127,62 @@
             padding: 1rem;
             height: 300px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            width: 338px;
-            margin-left: -25px;
-            margin-top: -13px;
+            width: 100%;
+            box-sizing: border-box;
         }
-    
-        .summary-item.income .amount {
-            color: #00b894;
+        
+        /* Media Queries for Responsive Design */
+        @media (max-width: 576px) {
+            .chart-wrapper {
+                height: 250px;
+                padding: 0.75rem;
+            }
+            
+            .chart-container {
+                gap: 1.5rem;
+                padding: 0.75rem;
+                margin-top: 5px;
+            }
+            
+            .summary-item h3 {
+                font-size: 0.8rem;
+            }
+            
+            .summary-item .amount {
+                font-size: 12px;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .chart-wrapper {
+                height: 220px;
+                padding: 0.5rem;
+            }
+            
+            .chart-container {
+                gap: 1rem;
+                padding: 0.5rem;
+            }
         }
     </style>
 </head>
 <body style="background-color: #f1f1f2;">
     
     <div class="main-content">
-        <header class="header">
-            <div class="header-center">
-                <h1 class="app-title">Analysis</h1>
-            </div>
-            <div class="header-right">
-                <div class="search-container">
-                    <a href="search.html" class="search-icon">
-                        <i class="fas fa-search"></i>
-                    </a>
+        <div class="fixed-header">
+            <header class="header">
+                <div class="header-center">
+                    <h1 class="app-title">Analysis</h1>
                 </div>
-            </div>
-        </header>
+                <div class="header-right">
+                    <div class="search-container">
+                        <a href="search.html" class="search-icon">
+                            <i class="fas fa-search"></i>
+                        </a>
+                    </div>
+                </div>
+            </header>
 
-        <div class="page-content page-transition active content-loaded">
             <div class="transaction-summary" id="transactionSummary">
                 <div class="summary-item expense">
                     <h3>EXPENSE</h3>
@@ -92,6 +193,9 @@
                     <p class="amount" id="totalIncome">₹0.00</p>
                 </div>
             </div>
+        </div>
+
+        <div class="scrollable-content">
             <div class="chart-container">
                 <div class="chart-wrapper">
                     <canvas id="trendChart"></canvas>
@@ -163,7 +267,7 @@
             // Update summary when transactions change
             updateTransactionSummary();
         });
-        </script>
+    </script>
 
     <script src="script.js"></script>
     <script src="charts.js"></script>

@@ -9,6 +9,15 @@ function initializeCharts() {
     // Render charts
     renderPieChart(categoryData);
     renderBarChart(monthlyData);
+    
+    // Handle window resize for responsiveness
+    window.addEventListener('resize', function() {
+        // Destroy and recreate charts on resize for better responsiveness
+        Chart.getChart('categoryChart')?.destroy();
+        Chart.getChart('trendChart')?.destroy();
+        renderPieChart(categoryData);
+        renderBarChart(monthlyData);
+    });
 }
 
 function processDataForPieChart(transactions) {
@@ -41,15 +50,31 @@ function processDataForBarChart(transactions) {
         }
     });
 
+    // Sort by date
+    const allLabels = [...new Set([...Object.keys(monthlyExpenses), ...Object.keys(monthlyIncome)])];
+    const sortedLabels = allLabels.sort((a, b) => {
+        const dateA = new Date(a);
+        const dateB = new Date(b);
+        return dateA - dateB;
+    });
+
+    // Only display the last 6 months if there are more than 6 months of data
+    const limitedLabels = sortedLabels.length > 6 ? sortedLabels.slice(-6) : sortedLabels;
+
+    // Map the data to match the limited labels
+    const expenses = limitedLabels.map(label => monthlyExpenses[label] || 0);
+    const income = limitedLabels.map(label => monthlyIncome[label] || 0);
+
     return {
-        labels: [...new Set([...Object.keys(monthlyExpenses), ...Object.keys(monthlyIncome)])].sort(),
-        expenses: Object.values(monthlyExpenses),
-        income: Object.values(monthlyIncome)
+        labels: limitedLabels,
+        expenses: expenses,
+        income: income
     };
 }
 
 function renderPieChart(data) {
     const ctx = document.getElementById('categoryChart').getContext('2d');
+    const isMobile = window.innerWidth < 576;
     
     new Chart(ctx, {
         type: 'doughnut',
@@ -75,11 +100,15 @@ function renderPieChart(data) {
             maintainAspectRatio: false,
             plugins: {
                 legend: {
-                    position: 'bottom',
+                    position: isMobile ? 'right' : 'bottom',
+                    align: 'center',
                     labels: {
+                        boxWidth: isMobile ? 10 : 20,
+                        padding: isMobile ? 5 : 10,
                         color: '#f5f5f5',
                         font: {
-                            family: 'Poppins'
+                            family: 'Poppins',
+                            size: isMobile ? 9 : 12
                         }
                     }
                 },
@@ -89,7 +118,10 @@ function renderPieChart(data) {
                     color: '#f5f5f5',
                     font: {
                         family: 'Poppins',
-                        size: 16
+                        size: isMobile ? 14 : 16
+                    },
+                    padding: {
+                        bottom: isMobile ? 5 : 10
                     }
                 }
             }
@@ -99,6 +131,7 @@ function renderPieChart(data) {
 
 function renderBarChart(data) {
     const ctx = document.getElementById('trendChart').getContext('2d');
+    const isMobile = window.innerWidth < 576;
     
     new Chart(ctx, {
         type: 'bar',
@@ -133,8 +166,10 @@ function renderBarChart(data) {
                     ticks: {
                         color: '#f5f5f5',
                         font: {
-                            family: 'Poppins'
-                        }
+                            family: 'Poppins',
+                            size: isMobile ? 9 : 12
+                        },
+                        maxTicksLimit: isMobile ? 5 : 8
                     }
                 },
                 x: {
@@ -144,8 +179,11 @@ function renderBarChart(data) {
                     ticks: {
                         color: '#f5f5f5',
                         font: {
-                            family: 'Poppins'
-                        }
+                            family: 'Poppins',
+                            size: isMobile ? 9 : 12
+                        },
+                        maxRotation: isMobile ? 45 : 0,
+                        minRotation: isMobile ? 45 : 0
                     }
                 }
             },
@@ -153,9 +191,12 @@ function renderBarChart(data) {
                 legend: {
                     position: 'bottom',
                     labels: {
+                        boxWidth: isMobile ? 10 : 20,
+                        padding: isMobile ? 5 : 10,
                         color: '#f5f5f5',
                         font: {
-                            family: 'Poppins'
+                            family: 'Poppins',
+                            size: isMobile ? 9 : 12
                         }
                     }
                 },
@@ -165,7 +206,10 @@ function renderBarChart(data) {
                     color: '#f5f5f5',
                     font: {
                         family: 'Poppins',
-                        size: 16
+                        size: isMobile ? 14 : 16
+                    },
+                    padding: {
+                        bottom: isMobile ? 5 : 10
                     }
                 }
             }

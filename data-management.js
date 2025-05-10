@@ -274,7 +274,7 @@ function createPDFReport() {
         const startX = (210 - totalCardsWidth) / 2;
         
         // Income Card - Use attractive green colors
-        doc.setFillColor(46, 204, 113, 0.2); // Light green with transparency
+        doc.setFillColor(245, 245, 245);
         doc.roundedRect(startX, cardY, cardWidth, cardHeight, 3, 3, 'F');
         doc.setTextColor(39, 174, 96); // Darker green for text
         doc.setFontSize(12);
@@ -284,7 +284,7 @@ function createPDFReport() {
         doc.text(`${safeCurrencySymbol(currency.symbol)}${totalIncome.toFixed(2)}`, startX + cardWidth/2, cardY + 18, { align: 'center' });
         
         // Expense Card - Use attractive red colors
-        doc.setFillColor(231, 76, 60, 0.2); // Light red with transparency
+        doc.setFillColor(245, 245, 245);
         doc.roundedRect(startX + cardWidth + cardSpacing, cardY, cardWidth, cardHeight, 3, 3, 'F');
         doc.setTextColor(192, 57, 43); // Darker red for text
         doc.text('EXPENSE', startX + cardWidth + cardSpacing + cardWidth/2, cardY + 8, { align: 'center' });
@@ -293,11 +293,11 @@ function createPDFReport() {
         // Balance Card - Use attractive blue colors for positive, red for negative
         const isPositiveBalance = balance >= 0;
         if (isPositiveBalance) {
-            doc.setFillColor(52, 152, 219, 0.2); // Light blue with transparency
+            doc.setFillColor(245, 245, 245);
             doc.roundedRect(startX + (cardWidth + cardSpacing) * 2, cardY, cardWidth, cardHeight, 3, 3, 'F');
             doc.setTextColor(41, 128, 185); // Darker blue for text
         } else {
-            doc.setFillColor(231, 76, 60, 0.2); // Light red with transparency
+            doc.setFillColor(245, 245, 245); 
             doc.roundedRect(startX + (cardWidth + cardSpacing) * 2, cardY, cardWidth, cardHeight, 3, 3, 'F');
             doc.setTextColor(192, 57, 43); // Darker red for text
         }
