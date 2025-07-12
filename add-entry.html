@@ -16,12 +16,6 @@
             color: white;
         }
 
-        .header-center h2{
-            font-family: "Fugaz One", serif;
-            font-weight: 400;
-            font-style: normal;
-        }
-
         /* Pop-up styles */
         .popup-overlay {
             display: none;
@@ -517,9 +511,12 @@
                 editIndex = editTransaction.index;
                 currentType = editTransaction.type;
                 currentAmount = editTransaction.amount.toString();
-                updateDisplayAmount();
+                updateDisplayAmount(); // Use the function to properly display with currency symbol
+                categorySelect.value = editTransaction.category.toLowerCase();
+                notesArea.value = editTransaction.notes;
+                document.getElementById('datetimePicker').value = editTransaction.date;
                 
-                // Set correct toggle button and show appropriate categories
+                // Set correct toggle button
                 toggleBtns.forEach(btn => {
                     btn.classList.remove('active');
                     if ((btn.id === 'expenseBtn' && currentType === 'expense') ||
@@ -528,25 +525,12 @@
                     }
                 });
                 
-                // Show correct category grid and select the category
+                // Show correct category group
                 if (currentType === 'expense') {
-                    expenseCategories.classList.add('active');
-                    incomeCategories.classList.remove('active');
+                    expenseCategories.style.display = '';
                 } else {
-                    expenseCategories.classList.remove('active');
-                    incomeCategories.classList.add('active');
+                    incomeCategories.style.display = '';
                 }
-                
-                // Select the correct category
-                const categoryValue = editTransaction.category.toLowerCase().replace(/\s+/g, '_');
-                const categoryItem = document.querySelector(`.category-item[data-value="${categoryValue}"]`);
-                if (categoryItem) {
-                    categoryItem.classList.add('selected');
-                    selectedCategoryInput.value = categoryValue;
-                }
-                
-                notesArea.value = editTransaction.notes;
-                document.getElementById('datetimePicker').value = editTransaction.date;
                 
                 // Clear the stored edit transaction
                 localStorage.removeItem('editTransaction');
