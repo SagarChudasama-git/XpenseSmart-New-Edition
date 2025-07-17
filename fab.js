@@ -106,8 +106,8 @@ document.addEventListener('DOMContentLoaded', function() {
 function ensureFabPosition(fab) {
     if (fab) {
         fab.style.position = 'fixed';
-        fab.style.bottom = '85px';
-        fab.style.right = '20px';
+        fab.style.bottom = '80px';
+        fab.style.right = '16px';
         fab.style.left = 'auto';
         fab.style.transform = 'none';
         fab.style.width = '56px';

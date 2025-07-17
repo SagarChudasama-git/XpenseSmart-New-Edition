@@ -373,8 +373,8 @@ function initFAB() {
             // Show FAB on Record section - apply styles
             fabButton.style.cssText = `
                 position: fixed !important;
-                bottom: 85px !important;
-                right: 20px !important;
+                bottom: 80px !important;
+                right: 16px !important;
                 left: auto !important;
                 transform: none !important;
                 opacity: 1 !important;
@@ -398,8 +398,8 @@ function initFAB() {
                 setTimeout(function() {
                     fabButton.style.cssText = `
                         position: fixed !important;
-                        bottom: 85px !important;
-                        right: 20px !important;
+                        bottom: 80px !important;
+                        right: 16px !important;
                         left: auto !important;
                         transform: none !important;
                         opacity: 1 !important;
