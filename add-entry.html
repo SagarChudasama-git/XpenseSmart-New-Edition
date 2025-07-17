@@ -6,7 +6,6 @@
     <title>Add Entry - XpenseSmart</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="transitions.css">
-    <link rel="stylesheet" href="loader.css">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
@@ -512,7 +511,24 @@
                 currentType = editTransaction.type;
                 currentAmount = editTransaction.amount.toString();
                 updateDisplayAmount(); // Use the function to properly display with currency symbol
-                categorySelect.value = editTransaction.category.toLowerCase();
+                
+                // Set the category by selecting the correct category item
+                const categoryValue = editTransaction.category.toLowerCase().replace(/ /g, '_');
+                const categoryGrid = currentType === 'expense' ? expenseCategories : incomeCategories;
+                const categoryItem = categoryGrid.querySelector(`.category-item[data-value="${categoryValue}"]`) || 
+                                    categoryGrid.querySelector(`.category-item[data-value="other_${currentType}"]`);
+                
+                if (categoryItem) {
+                    // Remove selection from all items
+                    document.querySelectorAll('.category-item').forEach(item => {
+                        item.classList.remove('selected');
+                    });
+                    
+                    // Select this item
+                    categoryItem.classList.add('selected');
+                    selectedCategoryInput.value = categoryItem.dataset.value;
+                }
+                
                 notesArea.value = editTransaction.notes;
                 document.getElementById('datetimePicker').value = editTransaction.date;
                 
@@ -527,9 +543,11 @@
                 
                 // Show correct category group
                 if (currentType === 'expense') {
-                    expenseCategories.style.display = '';
+                    expenseCategories.classList.add('active');
+                    incomeCategories.classList.remove('active');
                 } else {
-                    incomeCategories.style.display = '';
+                    incomeCategories.classList.add('active');
+                    expenseCategories.classList.remove('active');
                 }
                 
                 // Clear the stored edit transaction
@@ -650,8 +668,9 @@
             // Save back to localStorage
             localStorage.setItem('transactions', JSON.stringify(transactions));
 
-            // Create and dispatch transaction event
-            const event = new CustomEvent('transaction-added', {
+            // Create and dispatch appropriate event based on whether we're editing or adding
+            const eventName = editIndex >= 0 ? 'transaction-edited' : 'transaction-added';
+            const event = new CustomEvent(eventName, {
                 detail: {
                     type: currentType,
                     amount: parseFloat(currentAmount)
@@ -660,7 +679,7 @@
             window.dispatchEvent(event);
             
             // Show success message and redirect
-            showPopup('success', 'Success!', 'Transaction saved successfully', () => {
+            showPopup('success', 'Success!', 'Transaction saved successfully', false, () => {
                 window.location.href = 'index.html';
             });
         });
@@ -676,7 +695,8 @@
         });
     });
     </script>
-    <script src="loader.js"></script>
     <script src="currency.js"></script>
+    <script src="budgets.js"></script>
+    <script src="budget-alerts.js"></script>
 </body>
 </html>

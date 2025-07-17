@@ -290,7 +290,7 @@ a {
 }
 
 .sidebar .copyright{
-    margin-top: 55vh;
+    margin-top: 63vh;
     text-align: center;
     margin-left: 20px;
     font-size: 0.7rem;
@@ -570,15 +570,30 @@ a {
 /* FAB Button Styles */
 .fab {
     position: fixed !important;
-    bottom: 80px !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
+    bottom: 85px !important;
+    right: 20px !important;
+    left: auto !important;
+    transform: none !important;
     z-index: 1001 !important;
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
-                opacity 0.3s ease,
-                visibility 0.3s ease,
-                box-shadow 0.3s ease,
-                background-color 0.3s ease !important;
+    transition: none !important;
+    /* Default to hidden - will be shown via inline styles or JavaScript only on Record page */
+    display: none;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    /* Ensure position is truly fixed regardless of content changes */
+    width: 56px;
+    height: 56px;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Only Record page (index.html) will override these with inline styles */
+.fab.visible {
+    display: block;
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .fab-button {
@@ -593,9 +608,14 @@ a {
     border: none;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: none;
     font-size: 1.5rem;
     outline: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: -7px;
+    left: 130px;
 }
 
 .fab-button i {
@@ -604,14 +624,11 @@ a {
 }
 
 .fab-button:hover {
-    transform: scale(1.05) translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
     background: #34495e;
 }
 
 .fab-button:active {
-    transform: scale(0.95);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    background: #1c2e40;
 }
 
 /* Bottom Navigation */
@@ -720,46 +737,6 @@ a {
 
 .sidebar.active, .sidebar-overlay.active {
     animation: fadeIn 0.3s ease forwards;
-}
-
-.fab {
-    position: fixed;
-    bottom: 48px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1001;
-}
-
-.fab-button {
-    background: #2c3e50;
-    color: white;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 1.5rem;
-    margin-bottom: -25px;
-}
-
-.fab-button i {
-    font-size: 24px;
-}
-
-.fab-button:hover {
-    transform: scale(1.05) translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
-    background: #34495e;
-}
-
-.fab-button:active {
-    transform: scale(0.95);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Currency Selection Styles */
@@ -980,4 +957,78 @@ a {
 .confirmation-content h3 .fa-check-circle {
     color: #00b894;
     margin-right: 5px;
+}
+
+/* Budget Alert Styles */
+.budget-alert {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 8px;
+    background: #ff7675;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    transform: translateY(-100px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: 350px;
+    width: calc(100% - 40px);
+}
+
+.budget-alert.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.budget-alert .alert-icon {
+    font-size: 20px;
+}
+
+.budget-alert .alert-content {
+    flex: 1;
+}
+
+.budget-alert .alert-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.budget-alert .alert-message {
+    font-size: 13px;
+    opacity: 0.9;
+}
+
+.budget-alert .close-alert {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.budget-alert .close-alert:hover {
+    opacity: 1;
+}
+
+@media (max-width: 576px) {
+    .budget-alert {
+        top: 10px;
+        right: 10px;
+        width: calc(100% - 20px);
+        padding: 12px 15px;
+    }
+    
+    .budget-alert .alert-icon {
+        font-size: 18px;
+    }
 }

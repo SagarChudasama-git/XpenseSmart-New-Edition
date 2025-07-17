@@ -219,12 +219,15 @@ function displayTransactions() {
         
         monthTransactions.forEach(transaction => {
             // Find the index of this transaction in the main array
-            const index = allTransactions.findIndex(t => 
-                t.amount === transaction.amount && 
-                t.date === transaction.date && 
-                t.type === transaction.type && 
-                t.category === transaction.category
-            );
+            // Use a more robust approach to find the exact transaction
+            const index = allTransactions.findIndex(t => {
+                // Compare all relevant properties to ensure exact match
+                return t.amount === transaction.amount && 
+                       t.date === transaction.date && 
+                       t.type === transaction.type && 
+                       t.category === transaction.category &&
+                       t.notes === transaction.notes;
+            });
             
             if (index !== -1) {
                 transactionsList.appendChild(createTransactionElement(transaction, index));
@@ -269,4 +272,10 @@ function updateTransactionSummary() {
 document.addEventListener('DOMContentLoaded', () => {
     displayTransactions();
     updateTransactionSummary();
+    
+    // Listen for transaction edited event
+    window.addEventListener('transaction-edited', function() {
+        displayTransactions();
+        updateTransactionSummary();
+    });
 });

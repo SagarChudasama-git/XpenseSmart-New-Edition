@@ -231,6 +231,23 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Set up the currency display in the header
     updateCurrencyDisplay();
+    
+    // Add event listener to ensure FAB position is maintained after currency changes
+    document.addEventListener('currency-changed', function() {
+        const fab = document.querySelector('.fab');
+        if (fab) {
+            // Force FAB to maintain its position
+            fab.style.position = 'fixed';
+            fab.style.bottom = '85px';
+            fab.style.right = '20px';
+            fab.style.left = 'auto';
+            fab.style.transform = 'none';
+            fab.style.width = '56px';
+            fab.style.height = '56px';
+            fab.style.margin = '0';
+            fab.style.padding = '0';
+        }
+    });
 });
 
 // Add a function to change currency (for external calls)

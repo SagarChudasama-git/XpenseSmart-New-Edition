@@ -181,6 +181,14 @@ document.addEventListener('DOMContentLoaded', function() {
         updateTransactionHistory();
     });
 
+    // Listen for transaction edited event
+    window.addEventListener('transaction-edited', function(e) {
+        // Recalculate all transaction data from scratch since we don't know what changed
+        calculateSummary();
+        updateSummary();
+        updateTransactionHistory();
+    });
+
     // Listen for currency change event
     window.addEventListener('currency-changed', function() {
         updateSummary();
@@ -214,14 +222,12 @@ document.addEventListener('DOMContentLoaded', function() {
         sidebarOverlay.classList.remove('active');
         document.body.style.overflow = ''; // Re-enable scrolling
         
-        // Small delay to match animation before showing FAB
-        setTimeout(() => {
-            if (fab && !searchPanel?.classList.contains('active')) {
-                fab.style.opacity = '1';
-                fab.style.pointerEvents = 'auto';
-                fab.style.visibility = 'visible';
-            }
-        }, 300);
+        // Show FAB immediately without delay
+        if (fab && !searchPanel?.classList.contains('active')) {
+            fab.style.opacity = '1';
+            fab.style.pointerEvents = 'auto';
+            fab.style.visibility = 'visible';
+        }
     }
 
     // Close sidebar when clicking the close button
@@ -292,21 +298,17 @@ document.addEventListener('DOMContentLoaded', function() {
             fab.style.visibility = 'hidden';
         });
         
-        // Also restore FAB button when sidebar is closed
+        // Also restore FAB button when sidebar is closed - without delay
         closeSidebar.addEventListener('click', function() {
-            setTimeout(() => {
-                fab.style.opacity = '1';
-                fab.style.pointerEvents = 'auto';
-                fab.style.visibility = 'visible';
-            }, 300); // Small delay to match animation
+            fab.style.opacity = '1';
+            fab.style.pointerEvents = 'auto';
+            fab.style.visibility = 'visible';
         });
         
         sidebarOverlay.addEventListener('click', function() {
-            setTimeout(() => {
-                fab.style.opacity = '1';
-                fab.style.pointerEvents = 'auto';
-                fab.style.visibility = 'visible';
-            }, 300); // Small delay to match animation
+            fab.style.opacity = '1';
+            fab.style.pointerEvents = 'auto';
+            fab.style.visibility = 'visible';
         });
         
         // Use MutationObserver as a backup
@@ -348,10 +350,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     redirectTo = 'index.html';
             }
 
-            document.body.classList.add('fade-out');
-            setTimeout(() => {
-                window.location.href = redirectTo;
-            }, 300);
+            // Remove fade-out and delay for instant navigation
+            window.location.href = redirectTo;
         });
     }
 
@@ -367,29 +367,65 @@ document.addEventListener('DOMContentLoaded', function() {
 function initFAB() {
     const fabButton = document.querySelector('.fab');
     if (fabButton) {
-        // Pre-set critical properties to make button responsive immediately
-        fabButton.style.pointerEvents = 'auto';
-        fabButton.style.opacity = '1';
-        
-        // Apply styles in a single operation to reduce reflows
-        requestAnimationFrame(() => {
+        // Show FAB only on Record section (index.html)
+        const currentPage = window.location.pathname.split('/').pop();
+        if (currentPage === 'index.html' || currentPage === '' || currentPage === '/') {
+            // Show FAB on Record section - apply styles
             fabButton.style.cssText = `
-                position: fixed;
-                bottom: 85px;
-                left: 50%;
-                transform: translateX(-50%);
-                opacity: 1;
-                will-change: transform, opacity;
-                z-index: 1001;
-                pointer-events: auto;
-                visibility: visible;
-                transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275),
-                            opacity 0.2s ease;
+                position: fixed !important;
+                bottom: 85px !important;
+                right: 20px !important;
+                left: auto !important;
+                transform: none !important;
+                opacity: 1 !important;
+                z-index: 1001 !important;
+                pointer-events: auto !important;
+                visibility: visible !important;
+                transition: none !important;
+                display: block !important;
+                width: 56px !important;
+                height: 56px !important;
+                margin: 0 !important;
+                padding: 0 !important;
             `;
             
-            // Force a repaint to ensure the button is visible immediately
-            fabButton.offsetHeight;
-        });
+            // Add visible class for CSS targeting
+            fabButton.classList.add('visible');
+            
+            // Ensure the FAB position is not affected by other elements
+            document.addEventListener('currency-changed', function() {
+                // Reapply position styles after currency change
+                setTimeout(function() {
+                    fabButton.style.cssText = `
+                        position: fixed !important;
+                        bottom: 85px !important;
+                        right: 20px !important;
+                        left: auto !important;
+                        transform: none !important;
+                        opacity: 1 !important;
+                        z-index: 1001 !important;
+                        pointer-events: auto !important;
+                        visibility: visible !important;
+                        transition: none !important;
+                        display: block !important;
+                        width: 56px !important;
+                        height: 56px !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
+                    `;
+                }, 0);
+            });
+        } else {
+            // Hide FAB on other sections - ensure it's completely hidden
+            fabButton.style.cssText = `
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                pointer-events: none !important;
+            `;
+            // Remove visible class
+            fabButton.classList.remove('visible');
+        }
     }
 }
 
@@ -626,12 +662,10 @@ function showNotification(message, type = 'info', persistent = false) {
         closeBtn.className = 'close-notification';
         closeBtn.innerHTML = '&times;';
         closeBtn.addEventListener('click', () => {
-            notification.classList.add('fade-out');
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 300);
+            // Remove immediately without fade animation
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
         });
         notification.appendChild(closeBtn);
     }
@@ -642,12 +676,9 @@ function showNotification(message, type = 'info', persistent = false) {
     // Auto-remove non-persistent notifications after 4 seconds
     if (!persistent) {
         setTimeout(() => {
-            notification.classList.add('fade-out');
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 300);
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
         }, 4000);
     }
     
