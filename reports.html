@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>XpenseSmart - Expense Management</title>
+    <title>XpenseSmart - Reports</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="transitions.css">
     <link rel="stylesheet" href="popup.css">
@@ -14,6 +14,10 @@
     <!-- PDF Library for exports -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Currency utilities -->
+    <script src="currency-utils.js"></script>
 </head>
 <body style="background-color: #f1f1f2;">
     <!-- Sidebar -->
@@ -40,85 +44,70 @@
         <!-- Header -->
         <header class="header">
             <div class="header-left">
-                <button class="sidebar-toggle" id="sidebarToggle">
-                    <i class="fas fa-bars"></i>
+                <button class="sidebar-toggle" id="sidebarToggle" onclick="window.location.href='index.html'">
+                    <i class="fas fa-arrow-left"></i>
                 </button>
             </div>
             <div class="header-center">
-                <h1 class="app-title">XpenseSmart</h1>
+                <h1 class="app-title">Reports</h1>
             </div>
             <div class="header-right">
                 <div class="currency-display" id="currencyDisplay">
                     <i class="fas fa-money-bill-wave"></i>
                     <div class="currency-tooltip"></div>
                 </div>
-                <div class="search-container">
-                    <a href="search.html" class="search-icon">
-                        <i class="fas fa-search"></i>
-                    </a>
-                </div>
             </div>
         </header>
 
-        <!-- Transaction Summary Section -->
-        <div class="transaction-summary">
-            <div class="summary-item expense">
-                <h3>EXPENSE</h3>
-                <p class="amount" data-amount="0.00">₹0.00</p>
-            </div>
-            <div class="summary-item income">
-                <h3>INCOME</h3>
-                <p class="amount" data-amount="0.00">₹0.00</p>
-            </div>
-            <div class="summary-item total">
-                <h3>TOTAL</h3>
-                <p class="amount" data-amount="0.00">₹0.00</p>
+        <!-- Reports List View -->
+        <div class="reports-container" id="reportsListView">
+            <div class="reports-list" id="reportsList">
+                <!-- Reports will be populated here dynamically -->
             </div>
         </div>
 
-        <!-- Transaction History Section -->
-        <div class="transaction-history">
-            <h2>Recent Transactions</h2>
-            <div class="transaction-list" id="transactionList">
-                <!-- Transactions will be populated here dynamically -->               
+        <!-- Full Screen Report View (initially hidden) -->
+        <div class="report-detail-view" id="reportDetailView" style="display: none;">
+            <div class="report-detail-header">
+                <button class="back-button" id="backToReportsList" style="margin-left: -8px;">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h2 id="reportTitle" style="margin-left: 40px;">Report Title</h2>
+            </div>
+            <div class="report-content">
+                <div class="report-summary">
+                    <div class="summary-card income">
+                        <h3>Income</h3>
+                        <p class="amount" id="reportIncome">₹0.00</p>
+                    </div>
+                    <div class="summary-card expense">
+                        <h3>Expenses</h3>
+                        <p class="amount" id="reportExpense">₹0.00</p>
+                    </div>
+                    <div class="summary-card balance">
+                        <h3>Balance</h3>
+                        <p class="amount" id="reportBalance">₹0.00</p>
+                    </div>
+                </div>
+                <div class="report-charts">
+                    <div class="chart-container">
+                        <h3>Spending by Category</h3>
+                        <div class="chart-container">
+                            <canvas id="categoryPieChart" style="height: 160px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="report-transactions">
+                    <h3>Key Transactions</h3>
+                    <div id="reportTransactions" class="transaction-list"></div>
+                </div>
             </div>
         </div>
     </div>
-
-    <!-- Floating Action Button -->
-    <div class="fab" style="display: block; visibility: visible; opacity: 1; position: fixed; bottom: 80px; right: 16px; left: auto; transform: none; width: 56px; height: 56px; margin: 0; padding: 0;">
-        <button class="fab-button">
-            <i class="fas fa-plus"></i>
-        </button>
-    </div>
-
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-        <a href="index.html" class="nav-item active">
-            <i class="fas fa-plus-circle"></i>
-            <span>Record</span>
-        </a>
-        <a href="analysis.html" class="nav-item">
-            <i class="fas fa-chart-pie"></i>
-            <span>Analysis</span>
-        </a>
-        <a href="history.html" class="nav-item">
-            <i class="fas fa-history"></i>
-            <span>History</span>
-        </a>
-        <a href="budgets.html" class="nav-item">
-            <i class="fas fa-money-bill-wave"></i>
-            <span>Budgets</span>
-        </a>
-    </nav>
-        <script src="script.js"></script>
-    </nav>
     
     <script src="script.js"></script>
     <script src="currency.js"></script>
     <script src="data-management.js"></script>
-    <script src="budgets.js"></script>
-    <script src="budget-alerts.js"></script>
-    <script src="fab.js"></script>
+    <script src="reports.js"></script>
 </body>
 </html>
